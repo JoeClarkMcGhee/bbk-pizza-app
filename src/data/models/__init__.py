@@ -1,3 +1,3 @@
 from .post import Post
-from .reactions import Reactions
+from .reaction import Reaction
 from .topics import Topics
