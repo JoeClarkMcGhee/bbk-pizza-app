@@ -17,3 +17,9 @@ class Topic(models.Model):
     # on_delete set to CASCADE such that, if a post is deleted, all the topics associated to
     # that post are deleted too.
     post = models.ForeignKey("data.Post", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.post.id} - {self.topic}"
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}, id: {self.pk} topic: {self.topic}>"

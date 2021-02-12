@@ -16,6 +16,15 @@ class Post(models.Model):
     title = models.CharField(max_length=255)
     body = models.TextField()
 
+    def __str__(self):
+        return f"{self.created_at} - {self.title}"
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__}, id: {self.pk} created_at: {self.created_at}, "
+            f"expires_at: {self.expires_at}, title: {self.title}>"
+        )
+
     @transaction.atomic
     def save(self, *args, **kwargs):
         """
@@ -26,7 +35,7 @@ class Post(models.Model):
         # Check that topics have been supplied.
         if not topics_to_save:
             raise ValueError(
-                "You must provide a list of topics that associated to the post."
+                "You must provide a list of topics associated to the post."
             )
 
         # Check they are of the correct type for us to operate on.

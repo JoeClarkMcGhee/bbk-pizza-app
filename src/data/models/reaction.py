@@ -22,3 +22,12 @@ class Reaction(models.Model):
     # on_delete set to CASCADE such that, if a post is deleted, all the comments associated to
     # that post are deleted too.
     post = models.ForeignKey("data.Post", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.created_at} - {self.author}"
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__}, id: {self.pk} created_at: {self.created_at}, "
+            f"author: {self.author}, post: {self.post.pk}>"
+        )
