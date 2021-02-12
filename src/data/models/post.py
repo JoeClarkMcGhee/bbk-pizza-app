@@ -4,7 +4,7 @@ from django.db import models, transaction
 from . import topics
 
 
-class Posts(models.Model):
+class Post(models.Model):
     """
     Model for storing user posts.
     """

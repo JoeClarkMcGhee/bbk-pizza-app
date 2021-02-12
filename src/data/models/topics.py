@@ -16,4 +16,4 @@ class Topics(models.Model):
     topic = models.CharField(max_length=255, choices=TopicType.choices)
     # on_delete set to CASCADE such that, if a post is deleted, all the topics associated to
     # that post are deleted too.
-    post = models.ForeignKey("data.Posts", on_delete=models.CASCADE)
+    post = models.ForeignKey("data.Post", on_delete=models.CASCADE)

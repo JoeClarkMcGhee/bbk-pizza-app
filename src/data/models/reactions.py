@@ -1,7 +1,7 @@
 from django.contrib.auth import models as user_models
 from django.db import models
 
-from . import posts
+from . import post
 
 
 class LikeOrDislike(models.TextChoices):
@@ -23,4 +23,4 @@ class Reactions(models.Model):
     author = models.ForeignKey(user_models.User, on_delete=models.SET_NULL, null=True)
     # on_delete set to CASCADE such that, if a post is deleted, all the comments associated to
     # that post are deleted too.
-    post = models.ForeignKey(posts.Posts, on_delete=models.CASCADE)
+    post = models.ForeignKey(post.Post, on_delete=models.CASCADE)
