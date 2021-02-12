@@ -4,4 +4,4 @@ from . import models
 
 admin.site.register(models.Post)
 admin.site.register(models.Reaction)
-admin.site.register(models.Topics)
+admin.site.register(models.Topic)

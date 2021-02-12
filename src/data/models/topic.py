@@ -8,7 +8,7 @@ class TopicType(models.TextChoices):
     TECH = "Tech"
 
 
-class Topics(models.Model):
+class Topic(models.Model):
     """
     A model to store the topics associated to a post.
     """

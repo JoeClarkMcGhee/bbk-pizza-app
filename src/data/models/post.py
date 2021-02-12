@@ -1,7 +1,7 @@
 from django.contrib.auth import models as user_models
 from django.db import models, transaction
 
-from . import topics
+from . import topic as topic_model
 
 
 class Post(models.Model):
@@ -24,13 +24,13 @@ class Post(models.Model):
         topics_to_save = kwargs.get("topics")
 
         # Check that topics have been supplied.
-        if not topics:
+        if not topics_to_save:
             raise ValueError(
                 "You must provide a list of topics that associated to the post."
             )
 
         # Check they are of the correct type for us to operate on.
-        if type(topics) is not list:
+        if type(topics_to_save) is not list:
             raise ValueError("You must provide topics as a list")
 
         #  Check for an empty or over sized list.
@@ -39,7 +39,7 @@ class Post(models.Model):
 
         # Validate that the topic type is legal.
         try:
-            [topics.TopicType(topic) for topic in topics_to_save]
+            [topic.TopicType(topic) for topic in topics_to_save]
         except ValueError as e:
             raise Exception("Invalid topic types supplied") from e
 
@@ -49,5 +49,5 @@ class Post(models.Model):
         # And then save the topics. We save the topics after the post as the topics have a
         # foreign key to the post.
         for topic in set(topics_to_save):
-            t = topics.Topics(topic=topic, post=post)
+            t = topic_model.Topic(topic=topic, post=post)
             t.save()
