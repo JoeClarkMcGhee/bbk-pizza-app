@@ -9,10 +9,12 @@ django-rest-framework = "*"
 django-oauth-toolkit = "*"
 django-extensions = "*"
 requests = "*"
-ipdb = "*"
 pytest = "*"
 factory-boy = "*"
 pytest-django = "*"
+importlib-metadata = "*"
+typing-extensions = "*"
+ipython = "*"
 
 [dev-packages]
 

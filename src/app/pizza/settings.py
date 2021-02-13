@@ -25,8 +25,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_extensions",
     # Project specific apps
-    "app.data",
-    "app.interfaces",
+    "src.app.data",
+    "src.app.interfaces",
 ]
 
 MIDDLEWARE = [
