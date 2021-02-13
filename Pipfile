@@ -11,6 +11,8 @@ django-extensions = "*"
 requests = "*"
 ipdb = "*"
 pytest = "*"
+factory-boy = "*"
+pytest-django = "*"
 
 [dev-packages]
 
