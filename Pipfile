@@ -14,7 +14,6 @@ factory-boy = "*"
 pytest-django = "*"
 importlib-metadata = "*"
 typing-extensions = "*"
-ipython = "*"
 
 [dev-packages]
 
