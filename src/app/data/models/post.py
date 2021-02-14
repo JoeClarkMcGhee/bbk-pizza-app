@@ -25,12 +25,13 @@ class Post(models.Model):
             f"expires_at: {self.expires_at}, title: {self.title}>"
         )
 
+    @classmethod
     @transaction.atomic
-    def save(self, *args, **kwargs):
+    def create(cls, **kwargs):
         """
         Custom save method that ensures we save at least one topic to a post.
         """
-        topics_to_save = kwargs.get("topics")
+        topics_to_save = kwargs.pop("topics")
 
         # Check that topics have been supplied.
         if not topics_to_save:
@@ -48,15 +49,15 @@ class Post(models.Model):
 
         # Validate that the topic type is legal.
         try:
-            [topic.TopicType(topic) for topic in topics_to_save]
+            [topic_model.TopicType(t) for t in topics_to_save]
         except ValueError as e:
             raise Exception("Invalid topic types supplied") from e
 
         # At this stage we are happy that the supplied topics are valid so we can save the post
-        post = super().save(*args, **kwargs)
+        post = cls(**kwargs)
+        post.save()
 
         # And then save the topics. We save the topics after the post as the topics have a
         # foreign key to the post.
         for topic in set(topics_to_save):
-            t = topic_model.Topic(topic=topic, post=post)
-            t.save()
+            topic_model.Topic.objects.create(topic=topic, post=post)

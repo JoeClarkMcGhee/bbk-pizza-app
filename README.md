@@ -22,7 +22,7 @@ simple like/dis-like reactions.
 
 4. Run the test suite
 
-`pytest`
+`cd src && pytest`
 
 5. Activate the service
 

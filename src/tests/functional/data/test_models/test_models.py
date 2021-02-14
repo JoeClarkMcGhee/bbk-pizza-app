@@ -7,39 +7,55 @@ from src.app.data import models
 pytestmark = pytest.mark.django_db
 
 
-class TestPost:
+class TestModels:
     @pytest.fixture
     def user(self):
-        return user_models.User(username="Homer", password="742 Evergreen Terrace")
+        return user_models.User.objects.create_user(
+            username="Homer", password="742 Evergreen Terrace"
+        )
 
-    def test_create_post_object(self, user):
-        """
-        """
-        models.Post(expires_at=dt.now(), author=user.id, title=None, body=None)
+    @pytest.fixture
+    def topic(self):
+        return ["Politics"]
 
-    def test_multiple_topics_save_to_post(self):
-        """
-        """
-        pass
+    @pytest.fixture
+    def topics(self):
+        return ["Health", "Politics", "Sport"]
 
-    def test_not_able_to_create_post_object_when_no_topic_supplied(self):
+    def test_create_post_object(self, user, topic):
         """
+        We test that we can create a post object
         """
-        pass
+        models.Post.create(
+            expires_at=dt.now(),
+            author=user,
+            title="A super cool post",
+            body="A long post body",
+            topics=topic,
+        )
 
-
-class TestReaction:
-    def test_create_reaction(self):
-        """
-        """
-        pass
-
-    def test_assign_multiple_reactions_to_the_same_post(self):
-        """
-        """
-        pass
-
-    def test_not_able_to_create_reaction_object_when_no_post_supplied(self):
-        """
-        """
-        pass
+    # def test_multiple_topics_save_to_post(self):
+    #     """
+    #     """
+    #     pass
+    #
+    # def test_not_able_to_create_post_object_when_no_topic_supplied(self):
+    #     """
+    #     """
+    #     pass
+    #
+    #
+    # def test_create_reaction(self):
+    #     """
+    #     """
+    #     pass
+    #
+    # def test_assign_multiple_reactions_to_the_same_post(self):
+    #     """
+    #     """
+    #     pass
+    #
+    # def test_not_able_to_create_reaction_object_when_no_post_supplied(self):
+    #     """
+    #     """
+    #     pass
