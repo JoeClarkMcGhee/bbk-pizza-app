@@ -14,6 +14,7 @@ factory-boy = "*"
 pytest-django = "*"
 importlib-metadata = "*"
 typing-extensions = "*"
+httpie = "*"
 
 [dev-packages]
 
