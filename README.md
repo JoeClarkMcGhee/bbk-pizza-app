@@ -22,7 +22,7 @@ simple like/dis-like reactions.
 
 4. Run the test suite
 
-`cd src && pytest`
+`export DJANGO_SETTINGS_MODULE=app.pizza.settings && cd src && pytest`
 
 5. Activate the service
 
