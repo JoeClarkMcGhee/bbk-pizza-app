@@ -17,9 +17,11 @@ class Post(models.Model):
     body = models.TextField()
 
     def __str__(self):
+        # todo: parse the datetime to a date
         return f"{self.created_at} - {self.title}"
 
     def __repr__(self):
+        # todo: test the __repr__
         return (
             f"<{self.__class__.__name__}, id: {self.pk} created_at: {self.created_at}, "
             f"expires_at: {self.expires_at}, title: {self.title}>"
@@ -29,15 +31,13 @@ class Post(models.Model):
     @transaction.atomic
     def create(cls, **kwargs):
         """
-        Custom save method that ensures we save at least one topic to a post.
+        Custom create method that ensures at least one topic is assocaited to a post.
         """
-        topics_to_save = kwargs.pop("topics")
-
         # Check that topics have been supplied.
-        if not topics_to_save:
-            raise ValueError(
-                "You must provide a list of topics associated to the post."
-            )
+        try:
+            topics_to_save = kwargs.pop("topics")
+        except KeyError:
+            raise KeyError("You must provide a list of topics associated to the post.")
 
         # Check they are of the correct type for us to operate on.
         if type(topics_to_save) is not list:
@@ -50,8 +50,8 @@ class Post(models.Model):
         # Validate that the topic type is legal.
         try:
             [topic_model.TopicType(t) for t in topics_to_save]
-        except ValueError as e:
-            raise Exception("Invalid topic types supplied") from e
+        except ValueError:
+            raise ValueError("Invalid topic types supplied")
 
         # At this stage we are happy that the supplied topics are valid so we can save the post
         post = cls(**kwargs)
@@ -61,3 +61,5 @@ class Post(models.Model):
         # foreign key to the post.
         for topic in set(topics_to_save):
             topic_model.Topic.objects.create(topic=topic, post=post)
+
+        return post
