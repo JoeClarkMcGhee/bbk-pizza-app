@@ -5,15 +5,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('data', '0004_auto_20210212_0820'),
+        ("data", "0004_auto_20210212_0820"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='Reactions',
-            new_name='Reaction',
-        ),
+        migrations.RenameModel(old_name="Reactions", new_name="Reaction",),
     ]

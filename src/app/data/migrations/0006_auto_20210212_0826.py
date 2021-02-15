@@ -4,14 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
-        ('data', '0005_auto_20210212_0823'),
+        ("data", "0005_auto_20210212_0823"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='Topics',
-            new_name='Topic',
-        ),
+        migrations.RenameModel(old_name="Topics", new_name="Topic",),
     ]
