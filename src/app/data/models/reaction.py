@@ -33,3 +33,17 @@ class Reaction(models.Model):
             f"<{self.__class__.__name__}, id: {self.pk} created_at: {self.created_at}, "
             f"author: {self.author}, post: {self.post.pk}>"
         )
+
+    @classmethod
+    def create(cls, **kwargs):
+        # When new reactions are created we want to make sure that we record the author who made
+        # the reaction. We have to check this at object creation because the author field is
+        # nullable.
+        try:
+            kwargs["author"]
+        except KeyError:
+            raise KeyError("You must provide a list of topics associated to the post.")
+
+        reaction = cls(**kwargs)
+        reaction.save()
+        return reaction
