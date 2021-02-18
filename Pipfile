@@ -15,6 +15,7 @@ pytest-django = "*"
 importlib-metadata = "*"
 typing-extensions = "*"
 httpie = "*"
+freezegun = "*"
 
 [dev-packages]
 

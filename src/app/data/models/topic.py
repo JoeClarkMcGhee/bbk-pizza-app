@@ -21,7 +21,7 @@ class Topic(models.Model):
     )
 
     def __str__(self):
-        return f"{self.post.id} - {self.topic}"
+        return f"{self.topic}"
 
     def __repr__(self):
         return f"<{self.__class__.__name__}, id: {self.pk} topic: {self.topic}>"
