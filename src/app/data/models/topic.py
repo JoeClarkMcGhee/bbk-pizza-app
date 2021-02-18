@@ -13,6 +13,9 @@ class Topic(models.Model):
     A model to store the topics associated to a post.
     """
 
+    class Meta:
+        ordering = ["topic"]
+
     topic = models.CharField(max_length=255, choices=TopicType.choices)
     # on_delete set to CASCADE such that, if a post is deleted, all the topics associated to
     # that post are deleted too.

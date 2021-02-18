@@ -4,7 +4,6 @@ from src.app.data import models
 
 
 class CreateUserSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
     username = serializers.CharField(required=True, max_length=100)
     password = serializers.CharField(required=True, max_length=100)
 
@@ -47,9 +46,23 @@ class CreatePostSerializer(serializers.Serializer):
 
 
 class ListPostsSerializer(serializers.ModelSerializer):
-
     topics = serializers.StringRelatedField(many=True)
+    reactions = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = models.Post
-        fields = ["created_at", "expires_at", "author", "title", "body", "topics"]
+        fields = [
+            "created_at",
+            "expires_at",
+            "author",
+            "title",
+            "body",
+            "topics",
+            "reactions",
+        ]
+
+
+class CreateReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Reaction
+        fields = ["created_at", "like_or_dislike", "comment", "author", "post"]

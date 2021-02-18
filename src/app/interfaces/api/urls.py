@@ -11,8 +11,9 @@ urlpatterns = [
     # Post views.
     path("create-post", views.CreatePostView.as_view(), name="create-post"),
     path("posts", views.PostsView.as_view(), name="posts"),
-    # todo: When DetailPostView is called we should return the post and the associated reactions
     path("posts/<int:pk>", views.DetailPostView.as_view(), name="post-detail"),
+    # Reaction views.
+    path("add-reacion/", views.AddReactionView.as_view(), name="add-reaction"),
 ]
 
 

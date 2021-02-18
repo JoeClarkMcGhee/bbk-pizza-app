@@ -26,7 +26,10 @@ class Reaction(models.Model):
     )
 
     def __str__(self):
-        return f"{self.created_at} - {self.author}"
+        return (
+            f"{self.created_at.date()} - {self.author} - {self.like_or_dislike} -"
+            f" {self.comment}"
+        )
 
     def __repr__(self):
         return (
@@ -42,7 +45,7 @@ class Reaction(models.Model):
         try:
             kwargs["author"]
         except KeyError:
-            raise KeyError("You must provide a list of topics associated to the post.")
+            raise KeyError("You must provide an author when creating a reaction.")
 
         reaction = cls(**kwargs)
         reaction.save()
