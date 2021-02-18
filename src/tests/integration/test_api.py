@@ -124,7 +124,6 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
         # Add the first reaction.
         url = urls.reverse("add-reaction")
         first_reaction = {
-            "create_at": dt.now(),
             "like_or_dislike": "Like",
             "comment": "I really like this post",
             "author": user.id,
@@ -139,7 +138,6 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
 
         # Add the second reaction.
         second_reaction = {
-            "create_at": dt.now(),
             "like_or_dislike": "Dislike",
             "comment": "not for me",
             "author": user.id,
