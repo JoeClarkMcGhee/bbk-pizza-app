@@ -32,15 +32,25 @@ class CreatePostSerializer(serializers.Serializer):
     def get_topics(self, obj):
         return [t.topic for t in obj.topics.all()]
 
+    def validate_topics(self, topics):
+        if len(topics) < 1 or len(topics) > 4:
+            raise serializers.ValidationError(
+                "You can only provide up to a 4 topic but not less than one"
+            )
+        try:
+            [models.TopicType(t) for t in topics]
+            return topics
+        except ValueError:
+            raise serializers.ValidationError("Invalid topic types supplied")
+
     def create(self, validated_data):
         return models.Post.create(
             expires_at=validated_data["expires_at"],
             author=validated_data["author"],
             title=validated_data["title"],
             body=validated_data["body"],
-            # We have to get topics from the initial_data as it won't be in validated_data. Due
-            # to the binding of the serializer to the Post model we only validated the fields
-            # defined on the Post model.
+            # We have to get topics from the initial_data as it won't be in validated_data, due
+            # to the binding of the serializer to the Post model
             topics=self.initial_data["topics"],
         )
 
