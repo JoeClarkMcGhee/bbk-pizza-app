@@ -1,3 +1,3 @@
 from .post import Post
-from .reaction import Reaction
+from .reaction import LikeOrDislike, Reaction
 from .topic import Topic, TopicType

@@ -86,7 +86,7 @@ class TestModels:
         assert models.Post.objects.filter(author=None).count() == 1
 
     def test_create_reaction(self, user, post):
-        reaction = models.Reaction.create(
+        reaction = models.Reaction.objects.create(
             like_or_dislike="Like",
             comment="A really nice comment about the post",
             author=user,
@@ -95,26 +95,17 @@ class TestModels:
         assert models.Reaction.objects.all().count() == 1
         assert post.reactions.get(pk=1) == reaction
 
-    def test_not_able_to_create_reaction_if_no_author_provided(self, post):
-        with pytest.raises(KeyError):
-            models.Reaction.create(
-                like_or_dislike="Like",
-                comment="A really nice comment about the post",
-                post=post,
-            )
-        assert models.Reaction.objects.all().count() == 0
-
     def test_assign_multiple_reactions_to_the_same_post(self, user, post):
         assert post.reactions.count() == 0
         # First reaction.
-        models.Reaction.create(
+        models.Reaction.objects.create(
             like_or_dislike="Like",
             comment="A really nice comment about the post",
             author=user,
             post=post,
         )
         # Second reaction
-        models.Reaction.create(
+        models.Reaction.objects.create(
             like_or_dislike="Dislike",
             comment="A not very nice post about the post",
             author=user,
@@ -123,13 +114,13 @@ class TestModels:
         assert post.reactions.count() == 2
 
     def test_reactions_are_deleted_if_post_deleted(self, user, post):
-        models.Reaction.create(
+        models.Reaction.objects.create(
             like_or_dislike="Like",
             comment="A really nice comment about the post",
             author=user,
             post=post,
         )
-        models.Reaction.create(
+        models.Reaction.objects.create(
             like_or_dislike="Dislike",
             comment="A not very nice post about the post",
             author=user,

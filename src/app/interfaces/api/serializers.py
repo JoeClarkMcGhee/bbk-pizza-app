@@ -72,7 +72,21 @@ class ListPostsSerializer(serializers.ModelSerializer):
         ]
 
 
-class CreateReactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Reaction
-        fields = ["created_at", "like_or_dislike", "comment", "author", "post"]
+class CreateReactionSerializer(serializers.Serializer):
+    like_or_dislike = serializers.CharField()
+    comment = serializers.CharField()
+    author = serializers.PrimaryKeyRelatedField(queryset=user_models.User.objects.all())
+    post = serializers.PrimaryKeyRelatedField(queryset=models.Post.objects.all())
+
+    def validate_like_or_dislike(self, like_or_dislike):
+        if not like_or_dislike:
+            return like_or_dislike
+        try:
+            return models.LikeOrDislike(like_or_dislike).value
+        except ValueError:
+            raise serializers.ValidationError(
+                "like_or_dislike must be Like, Dislike or empty"
+            )
+
+    def create(self, validated_data):
+        return models.Reaction.objects.create(**validated_data)
