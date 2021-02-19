@@ -1,19 +1,20 @@
-from django.urls import include, path
+from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-
-from . import views
+from src.app.interfaces.api.views import post_views, reaction_views, user_views
 
 urlpatterns = [
     # User views.
-    path("create-user/", views.CreateUserView.as_view(), name="create-user"),
-    path("users/", views.UsersView.as_view(), name="users"),
-    path("users/<int:pk>", views.DetailUserView.as_view(), name="detail-user"),
+    path("create-user/", user_views.CreateUserView.as_view(), name="create-user",),
+    path("users/", user_views.UsersView.as_view(), name="users",),
+    path("users/<int:pk>", user_views.DetailUserView.as_view(), name="detail-user",),
     # Post views.
-    path("create-post", views.CreatePostView.as_view(), name="create-post"),
-    path("posts", views.PostsView.as_view(), name="posts"),
-    path("posts/<int:pk>", views.DetailPostView.as_view(), name="post-detail"),
+    path("create-post", post_views.CreatePostView.as_view(), name="create-post",),
+    path("posts", post_views.PostsView.as_view(), name="posts",),
+    path("posts/<int:pk>", post_views.DetailPostView.as_view(), name="post-detail",),
     # Reaction views.
-    path("add-reacion/", views.AddReactionView.as_view(), name="add-reaction"),
+    path(
+        "add-reacion/", reaction_views.AddReactionView.as_view(), name="add-reaction",
+    ),
 ]
 
 
