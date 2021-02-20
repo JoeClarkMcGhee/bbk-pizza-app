@@ -18,7 +18,7 @@ def test_api_workflow():
 
     # Create a user.
     data = {"username": "test user", "password": "pass1234"}
-    create_user_response = client.post(urls.reverse("create-user"), data, fomat="json")
+    create_user_response = client.post(urls.reverse("create-user"), data, format="json")
     assert create_user_response.status_code == status.HTTP_201_CREATED
 
     # Create a post.
@@ -47,7 +47,7 @@ def test_api_workflow():
     assert add_reaction_response.status_code == status.HTTP_201_CREATED
 
     # Get the post detail to check for successful creation of the post and reaction.
-    post_detail_response = client.get("/posts/1", fomat="json")
+    post_detail_response = client.get("/posts/1", format="json")
     assert post_detail_response.status_code == status.HTTP_200_OK
     content = io.BytesIO(post_detail_response.content)
     data = parsers.JSONParser().parse(content)

@@ -27,7 +27,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
     def test_create_user(self):
         url = urls.reverse("create-user")
         data = {"username": "test user", "password": "pass1234"}
-        response = self.client.post(url, data, fomat="json")
+        response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert user_models.User.objects.count() == 1
@@ -36,7 +36,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
     def test_list_users(self):
         _create_user("Harry", "you're a wizard harry!")
         url = urls.reverse("users")
-        response = self.client.get(url, fomat="json")
+        response = self.client.get(url, format="json")
 
         assert response.status_code == status.HTTP_200_OK
         expected_response = {"id": 1, "username": "Harry"}
@@ -44,7 +44,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
 
     def test_list_single_user(self):
         _create_user("Tony", "the tiger")
-        response = self.client.get("/users/1", fomat="json")
+        response = self.client.get("/users/1", format="json")
 
         assert response.status_code == status.HTTP_200_OK
         expected_response = {"id": 1, "username": "Tony"}
@@ -72,7 +72,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
     def test_list_post(self):
         user = _create_user("Another User", "passwordABC")
         _create_post(user, "body", "title", ["Tech"])
-        response = self.client.get("/posts/1", fomat="json")
+        response = self.client.get("/posts/1", format="json")
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["author"] == user.id
@@ -86,7 +86,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
         _create_post(user, "title A", "body A", ["Tech"])
         _create_post(user, "title B", "body B", ["Tech", "Sport"])
         url = urls.reverse("posts")
-        response = self.client.get(url, fomat="json")
+        response = self.client.get(url, format="json")
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -152,7 +152,7 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
 
         # We then test that the reactions have been added to the post and that they are return
         # correctly when we hit the post-detail end point.
-        get_post = self.client.get("/posts/1", fomat="json")
+        get_post = self.client.get("/posts/1", format="json")
         content = io.BytesIO(get_post.content)
         get_post_data = parsers.JSONParser().parse(content)
 
