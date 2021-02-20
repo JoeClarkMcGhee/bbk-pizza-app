@@ -7,6 +7,11 @@ urlpatterns = [
     path("create-user/", user_views.CreateUserView.as_view(), name="create-user",),
     path("users/", user_views.UsersView.as_view(), name="users",),
     path("users/<int:pk>", user_views.DetailUserView.as_view(), name="detail-user",),
+    path(
+        "users/<str:username>",
+        user_views.DetailUserViewByName.as_view(),
+        name="detail-user-by-name",
+    ),
     # Post views.
     path("create-post", post_views.CreatePostView.as_view(), name="create-post",),
     path("posts", post_views.PostsView.as_view(), name="posts",),

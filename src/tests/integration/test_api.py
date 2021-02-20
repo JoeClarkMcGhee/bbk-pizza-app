@@ -50,6 +50,14 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
         expected_response = {"id": 1, "username": "Tony"}
         assert response.data == expected_response
 
+    def test_get_user_by_name(self):
+        _create_user("Tony", "the tiger")
+        response = self.client.get("/users/Tony", format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        expected_response = {"id": 1, "username": "Tony"}
+        assert response.data == expected_response
+
     def test_create_post(self):
         user = _create_user("Denis", "password123")
         expires_at = dt.now()
