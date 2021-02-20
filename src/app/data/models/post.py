@@ -28,7 +28,7 @@ class Post(models.Model):
     @classmethod
     @transaction.atomic
     def create(cls, **kwargs):
-        # We save the topics associated with a post when at the same time as post instantiation.
+        # We save the topics associated with a post at the same time as post instantiation.
         topics_to_save = kwargs.pop("topics")
         post = cls(**kwargs)
         post.save()
