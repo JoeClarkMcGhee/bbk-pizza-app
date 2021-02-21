@@ -352,8 +352,18 @@ def tc15(ip, user_1, user_2, user_3, user_4):
 
 
 def tc16(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(f"TEST CASE: {user_3} comments on {user_4}'s post in the Health topic.\n")
+
+    get_user_3 = requests.get(url=f"{ip}users/{user_3}")
+    user_3_id = json.loads(get_user_3.content)["id"]
+    reaction = {
+        "like_or_dislike": "",
+        "comment": "A reaction about some post about health",
+        "author": user_3_id,
+        "post": user_posts.USER_4_POST_ID,
+    }
+    post = requests.post(url=f"{ip}add-reaction", json=reaction)
+    print(f"Status code of post to 'add-reaction': {post.status_code}")
 
 
 def tc17(ip, user_1, user_2, user_3, user_4):
