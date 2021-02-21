@@ -1,3 +1,4 @@
+import datetime
 import json
 from datetime import datetime as dt
 
@@ -126,17 +127,46 @@ def tc4(ip, user_1, user_2, user_3, user_4):
 
 
 def tc5(ip, user_1, user_2, user_3, user_4):
+    # todo: need to add authentication
+
     print(
-        f"TEST CASE: {user_2} post a message in the Tech topic with an expiration time using his "
+        f"TEST CASE: {user_2} posts a message in the Tech topic with an expiration time using his "
         "token.\n"
     )
 
+    get_user_2 = requests.get(url=f"{ip}users/{user_2}")
+    user_2_id = json.loads(get_user_2.content)["id"]
+    data = {
+        "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
+        "author": user_2_id,
+        "title": "My first post",
+        "body": "A really long post body",
+        "topics": ["Tech"],
+    }
+    post = requests.post(url=f"{ip}create-post", json=data)
+    print(f"Status code of post: {post.status_code}")
+    print(json.loads(post.content))
+
 
 def tc6(ip, user_1, user_2, user_3, user_4):
+    # todo: need to add authentication
     print(
         f"TEST CASE: {user_3} posts a message in the Tech topic with an expiration time using her "
         "token.\n"
     )
+
+    get_user_3 = requests.get(url=f"{ip}users/{user_3}")
+    user_3_id = json.loads(get_user_3.content)["id"]
+    data = {
+        "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
+        "author": user_3_id,
+        "title": "My first post",
+        "body": "A really long post body",
+        "topics": ["Tech"],
+    }
+    post = requests.post(url=f"{ip}create-post", json=data)
+    print(f"Status code of post: {post.status_code}")
+    print(json.loads(post.content))
 
 
 def tc7(ip, user_1, user_2, user_3, user_4):
