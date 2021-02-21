@@ -16,6 +16,11 @@ urlpatterns = [
     path("create-post", post_views.CreatePostView.as_view(), name="create-post",),
     path("posts", post_views.PostsView.as_view(), name="posts",),
     path("posts/<int:pk>", post_views.DetailPostView.as_view(), name="post-detail",),
+    path(
+        "posts/<str:topic>",
+        post_views.PostsByTopicView.as_view(),
+        name="posts-by-topic",
+    ),
     # Reaction views.
     path(
         "add-reaction", reaction_views.AddReactionView.as_view(), name="add-reaction",
