@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 from datetime import datetime as dt
 
 import requests
@@ -266,7 +267,7 @@ def tc10(ip, user_1, user_2, user_3, user_4):
     print(
         f"TEST CASE: {user_2} browses all the available posts in the Tech topic; at this stage he "
         f"can see the number of likes and dislikes for each post ({user_3} has 2 likes and 1 "
-        f"dislike and {user_2} has 1 like). There are not comments made yet.\n"
+        f"dislike and {user_2} has 1 like). There are no comments made yet.\n"
     )
 
     posts = requests.get(url=f"{ip}posts/Tech")
@@ -329,7 +330,7 @@ def tc14(ip, user_1, user_2, user_3, user_4):
     get_user_4 = requests.get(url=f"{ip}users/{user_4}")
     user_4_id = json.loads(get_user_4.content)["id"]
     data = {
-        "expires_at": f"{dt.now() + datetime.timedelta(days=5)}",
+        "expires_at": f"{dt.now() + datetime.timedelta(seconds=5)}",
         "author": user_4_id,
         "title": "Post 4",
         "body": "A cool post about something health related",
@@ -367,10 +368,33 @@ def tc16(ip, user_1, user_2, user_3, user_4):
 
 
 def tc17(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(
         f"TEST CASE: {user_3} dislikes {user_4}'s message in the Health topic after the end of "
         f"the post expiration time. This should fail.\n"
+    )
+
+    # We put the script to sleep for 6 seconds to ensure that the post will have expired
+    print("sleeping for 6 seconds...")
+    time.sleep(6)
+
+    get_user_3 = requests.get(url=f"{ip}users/{user_3}")
+    user_3_id = json.loads(get_user_3.content)["id"]
+    reaction = {
+        "like_or_dislike": "Dislike",
+        "comment": "",
+        "author": user_3_id,
+        "post": user_posts.USER_4_POST_ID,
+    }
+    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+
+    print(
+        "The post to 'add-reaction' should return a 400 as the post is no longer accepting "
+        "request"
+    )
+    print(f"Status code of post to 'add-reaction': {reaction.status_code}")
+    print(
+        f"Returned message of post to 'add-reaction': "
+        f"{json.loads(reaction.content)['non_field_errors'][0]}"
     )
 
 
