@@ -5,6 +5,24 @@ from datetime import datetime as dt
 import requests
 
 
+class UserPostIds:
+    USER_1_POST_ID = None
+    USER_2_POST_ID = None
+    USER_3_POST_ID = None
+
+    def set_user_1_post_id(self, pk):
+        self.USER_1_POST_ID = pk
+
+    def set_user_2_post_id(self, pk):
+        self.USER_2_POST_ID = pk
+
+    def set_user_3_post_id(self, pk):
+        self.USER_3_POST_ID = pk
+
+
+user_posts = UserPostIds()
+
+
 def test_case_runner(ip, test_cases):
     """
     We call a series of functions that each demonstrate a specific functionality. We dont make
@@ -103,6 +121,7 @@ def tc4(ip, user_1, user_2, user_3, user_4):
     }
     create_post = requests.post(url=f"{ip}create-post", json=data)
     post_id = json.loads(create_post.content)["id"]
+    user_posts.set_user_1_post_id(post_id)
 
     # user_2 post a reaction against user_1's post
     get_user_2 = requests.get(url=f"{ip}users/{user_2}")
@@ -143,6 +162,8 @@ def tc5(ip, user_1, user_2, user_3, user_4):
         "topics": ["Tech"],
     }
     post = requests.post(url=f"{ip}create-post", json=data)
+    post_id = json.loads(post.content)["id"]
+    user_posts.set_user_2_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
     print(json.loads(post.content))
 
@@ -164,6 +185,8 @@ def tc6(ip, user_1, user_2, user_3, user_4):
         "topics": ["Tech"],
     }
     post = requests.post(url=f"{ip}create-post", json=data)
+    post_id = json.loads(post.content)["id"]
+    user_posts.set_user_3_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
     print(json.loads(post.content))
 
@@ -180,9 +203,32 @@ def tc7(ip, user_1, user_2, user_3, user_4):
 
 
 def tc8(ip, user_1, user_2, user_3, user_4):
+    # todo: need to add authentication
     print(
-        f"TEST CASE: {user_2} and {user_1} 'like' {user_3}'s post in the Tech topic.\n"
+        f"TEST CASE: {user_1} and {user_2} 'like' {user_3}'s post in the Tech topic.\n"
     )
+
+    get_user_1 = requests.get(url=f"{ip}users/{user_1}")
+    user_1_id = json.loads(get_user_1.content)["id"]
+    first_reaction = {
+        "like_or_dislike": "Like",
+        "comment": "",
+        "author": user_1_id,
+        "post": user_posts.USER_3_POST_ID,
+    }
+    post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
+    print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
+
+    get_user_2 = requests.get(url=f"{ip}users/{user_2}")
+    user_2_id = json.loads(get_user_2.content)["id"]
+    second_reaction = {
+        "like_or_dislike": "Like",
+        "comment": "",
+        "author": user_2_id,
+        "post": user_posts.USER_3_POST_ID,
+    }
+    post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
+    print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
 
 
 def tc9(ip, user_1, user_2, user_3, user_4):
