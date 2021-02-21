@@ -9,6 +9,7 @@ class UserPostIds:
     USER_1_POST_ID = None
     USER_2_POST_ID = None
     USER_3_POST_ID = None
+    USER_4_POST_ID = None
 
     def set_user_1_post_id(self, pk):
         self.USER_1_POST_ID = pk
@@ -18,6 +19,9 @@ class UserPostIds:
 
     def set_user_3_post_id(self, pk):
         self.USER_3_POST_ID = pk
+
+    def set_user_4_post_id(self, pk):
+        self.USER_4_POST_ID = pk
 
 
 user_posts = UserPostIds()
@@ -317,15 +321,27 @@ def tc13(ip, user_1, user_2, user_3, user_4):
 
 
 def tc14(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(
         f"TEST CASE: {user_4} posts a message in the Health topic with an expiration time using "
         "her token.\n"
     )
 
+    get_user_4 = requests.get(url=f"{ip}users/{user_4}")
+    user_4_id = json.loads(get_user_4.content)["id"]
+    data = {
+        "expires_at": f"{dt.now() + datetime.timedelta(days=5)}",
+        "author": user_4_id,
+        "title": "Post 4",
+        "body": "A cool post about something health related",
+        "topics": ["Health"],
+    }
+    post = requests.post(url=f"{ip}create-post", json=data)
+    post_id = json.loads(post.content)["id"]
+    user_posts.set_user_4_post_id(post_id)
+    print(f"Status code of post: {post.status_code}")
+
 
 def tc15(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(
         f"TEST CASE: {user_3} browses all the available posts in the Health topic; at this stage "
         f"she can only {user_4}'s post.\n"
