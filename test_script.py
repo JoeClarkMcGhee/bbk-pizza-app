@@ -306,11 +306,14 @@ def tc12(ip, user_1, user_2, user_3, user_4):
 
 
 def tc13(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(
-        f"TEST CASE: {user_2} browses  all the available posts in the Tech topic; at this stage "
+        f"TEST CASE: {user_2} browses all the available posts in the Tech topic; at this stage "
         f"he can see the number of like and dislikes of each post and the comments made.\n"
     )
+
+    posts = requests.get(url=f"{ip}posts/Tech")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
 
 
 def tc14(ip, user_1, user_2, user_3, user_4):
