@@ -349,11 +349,14 @@ def tc17(ip, user_1, user_2, user_3, user_4):
 
 
 def tc18(ip, user_1, user_2, user_3, user_4):
-    # todo
     print(
         f"TEST CASE: {user_4} browses all the messages in the Health topic. There should be only "
         f"one post (his own) with one comment ({user_3}'s).\n"
     )
+
+    posts = requests.get(url=f"{ip}posts/Health")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
 
 
 def tc19(ip, user_1, user_2, user_3, user_4):
