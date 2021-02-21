@@ -31,3 +31,9 @@ simple like/dis-like reactions.
 6. Run the test script. Note, edit the IP in test script to point hit a local or production address
 
 `python test_script.py`
+
+
+<h2>Todo's</h2>
+- Pretty print the json in the test script
+
+- Add the failing test cases
