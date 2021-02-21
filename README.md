@@ -28,3 +28,6 @@ simple like/dis-like reactions.
 
 `python src/manage.py runserver`
 
+6. Run the test script. Note, edit the IP in test script to point hit a local or production address
+
+`python test_script.py`
