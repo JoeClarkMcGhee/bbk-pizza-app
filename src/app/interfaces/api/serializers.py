@@ -105,4 +105,8 @@ class CreateReactionSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        if not validated_data["like_or_dislike"]:
+            validated_data["like_or_dislike"] = models.LikeOrDislike.NEUTRAL
+        if not validated_data["comment"]:
+            validated_data["comment"] = "no comment"
         return models.Reaction.objects.create(**validated_data)

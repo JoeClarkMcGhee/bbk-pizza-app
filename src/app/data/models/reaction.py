@@ -5,6 +5,7 @@ from django.db import models
 class LikeOrDislike(models.TextChoices):
     LIKE = "Like"
     DISLIKE = "Dislike"
+    NEUTRAL = "Neutral"
 
 
 class Reaction(models.Model):
