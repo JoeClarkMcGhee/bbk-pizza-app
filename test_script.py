@@ -276,15 +276,37 @@ def tc11(ip, user_1, user_2, user_3, user_4):
         "as in Pizza a post owner cannot like their own messages.\n"
     )
 
+    print("SKIPPED")
+
 
 def tc12(ip, user_1, user_2, user_3, user_4):
     print(
-        f"TEST CASE: {user_2} and {user_1} comment for {user_3}'s post in the Tech topic in a "
-        f"round-robin fashion (on after the other adding at least 2 comments each).\n"
+        f"TEST CASE: {user_1} and {user_2} comment on {user_3}'s post in the Tech topic in a "
+        f"round-robin fashion (one after the other adding at least 2 comments each).\n"
     )
+
+    def add_reaction(user_, idx, comment):
+        reaction = {
+            "like_or_dislike": "",
+            "comment": comment,
+            "author": user_,
+            "post": user_posts.USER_3_POST_ID,
+        }
+        post = requests.post(url=f"{ip}add-reaction", json=reaction)
+        print(f"add reaction {idx +1} status code: {post.status_code}")
+
+    get_user_1 = requests.get(url=f"{ip}users/{user_4}")
+    user_1_id = json.loads(get_user_1.content)["id"]
+
+    get_user_2 = requests.get(url=f"{ip}users/{user_4}")
+    user_2_id = json.loads(get_user_2.content)["id"]
+
+    for idx, user in enumerate([user_1_id, user_2_id, user_1_id, user_2_id]):
+        add_reaction(user, idx, comment=f"cool comment number {idx + 1}")
 
 
 def tc13(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(
         f"TEST CASE: {user_2} browses  all the available posts in the Tech topic; at this stage "
         f"he can see the number of like and dislikes of each post and the comments made.\n"
@@ -292,6 +314,7 @@ def tc13(ip, user_1, user_2, user_3, user_4):
 
 
 def tc14(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(
         f"TEST CASE: {user_4} posts a message in the Health topic with an expiration time using "
         "her token.\n"
@@ -299,6 +322,7 @@ def tc14(ip, user_1, user_2, user_3, user_4):
 
 
 def tc15(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(
         f"TEST CASE: {user_3} browses all the available posts in the Health topic; at this stage "
         f"she can only {user_4}'s post.\n"
@@ -306,10 +330,12 @@ def tc15(ip, user_1, user_2, user_3, user_4):
 
 
 def tc16(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(f"TEST CASE: {user_3} comments on {user_4}'s post in the Health topic.\n")
 
 
 def tc17(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(
         f"TEST CASE: {user_3} dislikes {user_4}'s message in the Health topic after the end of "
         f"the post expiration time. This should fail.\n"
@@ -317,8 +343,9 @@ def tc17(ip, user_1, user_2, user_3, user_4):
 
 
 def tc18(ip, user_1, user_2, user_3, user_4):
+    # todo
     print(
-        f"TEST CASE: {user_4} broses all the messages in the Health topic. There should be only "
+        f"TEST CASE: {user_4} browses all the messages in the Health topic. There should be only "
         f"one post (his own) with one comment ({user_3}'s).\n"
     )
 
@@ -329,12 +356,16 @@ def tc19(ip, user_1, user_2, user_3, user_4):
         f"be empty.\n"
     )
 
+    print("SKIPPED")
+
 
 def tc20(ip, user_1, user_2, user_3, user_4):
     print(
         f"TEST CASE: {user_4} queries fo an active post having the highest interest (maximum sum "
         f"of like and dislikes in the Tech topic. This should be {user_3}'s post.\n"
     )
+
+    print("SKIPPED")
 
 
 if __name__ == "__main__":
