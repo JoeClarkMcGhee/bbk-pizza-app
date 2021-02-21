@@ -184,6 +184,10 @@ class TestApiEndPointsWithBadRequests:
         pass
 
     @pytest.mark.skip(reason="not yet implemented")
+    def test_cant_post_reaction_if_not_valid_user(self):
+        pass
+
+    @pytest.mark.skip(reason="not yet implemented")
     def test_bad_data_in_post_to_post_request(self):
         pass
 
