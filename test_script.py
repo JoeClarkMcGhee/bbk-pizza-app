@@ -13,22 +13,33 @@ def test_case_runner(ip, test_cases):
     """
 
     print(
-        "This is a simple app the cycles through 20 test cases that demonstrate the Pizza "
-        "API functionality.\n"
+        "\nThis app cycles through 20 test cases that demonstrate the Pizza API functionality.\n"
     )
-    wants_to_run_test_cases = input(
-        "Press 'y' if you want to cycle though test cases: "
+
+    user_1 = input(
+        "Enter (female) user name 1 or carriage return for default user 'Olga': "
     )
-    if wants_to_run_test_cases == "y":
-        user_1 = input("\nUser name 1 (female): ")
-        user_2 = input("\nUser name 2 (male): ")
-        user_3 = input("\nUser name 3 (female): ")
-        user_4 = input("\nUser name 4 (male): ")
-        for idx, test in enumerate(test_cases):
-            print(f"\n---- starting test case: {idx + 1} ----\n")
-            test(ip, user_1, user_2, user_3, user_4)
-            print(f"\n---- test case complete: {idx + 1} ----\n")
-    print("\n---- TESTS COMPLETE ----")
+    if not user_1:
+        user_1 = "Olga"
+    user_2 = input(
+        "Enter (male) user name 2 or carriage return for default user 'Nick': "
+    )
+    if not user_2:
+        user_2 = "Nick"
+    user_3 = input(
+        "Enter (female) user name 3 or carriage return for default user 'Mary': "
+    )
+    if not user_3:
+        user_3 = "Mary"
+    user_4 = input(
+        "Enter (male) user name 4 or carriage return for default user 'Nestor': "
+    )
+    if not user_4:
+        user_4 = "Nestor"
+
+    for idx, test in enumerate(test_cases):
+        print(f"\n---- test case: {idx + 1} ----")
+        test(ip, user_1, user_2, user_3, user_4)
 
 
 def tc1(ip, user_1, user_2, user_3, user_4):
@@ -57,12 +68,16 @@ def tc2(ip, user_1, user_2, user_3, user_4):
         f"service to register and get their tokens.\n"
     )
 
+    print("SKIPPED")
+
 
 def tc3(ip, user_1, user_2, user_3, user_4):
     print(
         f"TEST CASE: {user_1} makes a call to the API without using her token. This call should "
         f"be unsuccessful as the user is unauthorised.\n"
     )
+
+    print("SKIPPED")
 
 
 def tc4(ip, user_1, user_2, user_3, user_4):
