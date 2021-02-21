@@ -237,6 +237,26 @@ def tc9(ip, user_1, user_2, user_3, user_4):
         f"topic.\n"
     )
 
+    get_user_4 = requests.get(url=f"{ip}users/{user_4}")
+    user_4_id = json.loads(get_user_4.content)["id"]
+    first_reaction = {
+        "like_or_dislike": "Like",
+        "comment": "",
+        "author": user_4_id,
+        "post": user_posts.USER_2_POST_ID,
+    }
+    post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
+    print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
+
+    second_reaction = {
+        "like_or_dislike": "Dislike",
+        "comment": "",
+        "author": user_4_id,
+        "post": user_posts.USER_3_POST_ID,
+    }
+    post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
+    print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
+
 
 def tc10(ip, user_1, user_2, user_3, user_4):
     print(
