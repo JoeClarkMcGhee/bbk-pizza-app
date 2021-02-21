@@ -265,6 +265,10 @@ def tc10(ip, user_1, user_2, user_3, user_4):
         f"dislike and {user_2} has 1 like). There are not comments made yet.\n"
     )
 
+    posts = requests.get(url=f"{ip}posts/Tech")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
+
 
 def tc11(ip, user_1, user_2, user_3, user_4):
     print(
