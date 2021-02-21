@@ -55,7 +55,7 @@ def tc1(ip, user_1, user_2, user_3, user_4):
     def create_users():
         for user in [user_1, user_2, user_3, user_4]:
             requests.post(
-                url=f"{ip}create-user/",
+                url=f"{ip}create-user",
                 json={"username": user, "password": "password123"},
             )
             response = requests.get(url=f"{ip}users/{user}")
@@ -93,11 +93,11 @@ def tc4(ip, user_1, user_2, user_3, user_4):
 
     # user_1 creates a post
     get_user_1 = requests.get(url=f"{ip}users/{user_1}")
-    user_2_id = json.loads(get_user_1.content)["id"]
+    user_1_id = json.loads(get_user_1.content)["id"]
     data = {
         "expires_at": f"{dt.now()}",
-        "author": user_2_id,
-        "title": "My first post",
+        "author": user_1_id,
+        "title": "Post 1",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
@@ -128,7 +128,6 @@ def tc4(ip, user_1, user_2, user_3, user_4):
 
 def tc5(ip, user_1, user_2, user_3, user_4):
     # todo: need to add authentication
-
     print(
         f"TEST CASE: {user_2} posts a message in the Tech topic with an expiration time using his "
         "token.\n"
@@ -139,7 +138,7 @@ def tc5(ip, user_1, user_2, user_3, user_4):
     data = {
         "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
         "author": user_2_id,
-        "title": "My first post",
+        "title": "Post 2",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
@@ -160,7 +159,7 @@ def tc6(ip, user_1, user_2, user_3, user_4):
     data = {
         "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
         "author": user_3_id,
-        "title": "My first post",
+        "title": "Post 3",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
@@ -170,11 +169,14 @@ def tc6(ip, user_1, user_2, user_3, user_4):
 
 
 def tc7(ip, user_1, user_2, user_3, user_4):
+    # todo: need to add authentication
     print(
-        f"TEST CASE: {user_2} and {user_1} browse all the available posts in the Tech topic, "
-        "there should be three posts available with zero likes, zero dislike and without and "
-        "comments.\n"
+        f"TEST CASE: {user_2} browses all the available posts in the Tech topic, there should be "
+        f"three posts available with zero likes, zero dislike and without and comments.\n"
     )
+    posts = requests.get(url=f"{ip}posts/Tech")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
 
 
 def tc8(ip, user_1, user_2, user_3, user_4):
