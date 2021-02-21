@@ -1,3 +1,6 @@
+import json
+from datetime import datetime as dt
+
 import requests
 
 
@@ -82,9 +85,43 @@ def tc3(ip, user_1, user_2, user_3, user_4):
 
 def tc4(ip, user_1, user_2, user_3, user_4):
     print(
-        f"TEST CASE: {user_1} posts a message in the Tech topic with an expiration time of 5 "
-        "secs from now. After the end of the expiration time, the message will not accept any "
-        "further user interactions.\n"
+        f"TEST CASE: {user_1} posts a message in the Tech topic with an expiration time of now."
+        f" After the end of the expiration time, the message will not accept any further user "
+        f"interactions.\n"
+    )
+
+    # user_1 creates a post
+    get_user_1 = requests.get(url=f"{ip}users/{user_1}")
+    user_2_id = json.loads(get_user_1.content)["id"]
+    data = {
+        "expires_at": f"{dt.now()}",
+        "author": user_2_id,
+        "title": "My first post",
+        "body": "A really long post body",
+        "topics": ["Tech"],
+    }
+    create_post = requests.post(url=f"{ip}create-post", json=data)
+    post_id = json.loads(create_post.content)["id"]
+
+    # user_2 post a reaction against user_1's post
+    get_user_2 = requests.get(url=f"{ip}users/{user_2}")
+    user_2_id = json.loads(get_user_2.content)["id"]
+    reaction = {
+        "like_or_dislike": "Like",
+        "comment": "I really like this post",
+        "author": user_2_id,
+        "post": post_id,
+    }
+    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+
+    print(
+        "The post to 'add-reaction' should return a 400 as the post is no longer accepting "
+        "request"
+    )
+    print(f"Status code of post to 'add-reaction': {reaction.status_code}")
+    print(
+        f"Returned message of post to 'add-reaction': "
+        f"{json.loads(reaction.content)['non_field_errors'][0]}"
     )
 
 
