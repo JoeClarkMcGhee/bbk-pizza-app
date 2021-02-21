@@ -330,6 +330,9 @@ def tc15(ip, user_1, user_2, user_3, user_4):
         f"TEST CASE: {user_3} browses all the available posts in the Health topic; at this stage "
         f"she can only {user_4}'s post.\n"
     )
+    posts = requests.get(url=f"{ip}posts/Health")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
 
 
 def tc16(ip, user_1, user_2, user_3, user_4):
