@@ -1,3 +1,6 @@
+from datetime import datetime as dt
+
+import pytz
 from django.contrib.auth import models as user_models
 from rest_framework import serializers
 from src.app.data import models
@@ -19,15 +22,14 @@ class UsersViewSerializer(serializers.ModelSerializer):
         fields = ["id", "username"]
 
 
-class CreatePostSerializer(serializers.Serializer):
-    expires_at = serializers.DateTimeField()
-    author = serializers.PrimaryKeyRelatedField(queryset=user_models.User.objects.all())
-    title = serializers.CharField(max_length=255)
-    body = serializers.CharField()
-    # Because we define a PrimaryKeyRelatedField on author we bind the Post model to the
-    # serializer. topics is not on the Post model so we have to set the serializer type to
+class CreatePostSerializer(serializers.ModelSerializer):
+    # topics is not on the Post model so we have to set the serializer type to
     # SerializerMethodField and define how we want the topics to be returned.
     topics = serializers.SerializerMethodField(method_name="get_topics")
+
+    class Meta:
+        model = models.Post
+        fields = ["id", "expires_at", "author", "title", "body", "topics"]
 
     def get_topics(self, obj):
         return [t.topic for t in obj.topics.all()]
@@ -50,7 +52,8 @@ class CreatePostSerializer(serializers.Serializer):
             title=validated_data["title"],
             body=validated_data["body"],
             # We have to get topics from the initial_data as it won't be in validated_data, due
-            # to the binding of the serializer to the Post model
+            # to the binding of the serializer to the Post model. This is not an issue as we
+            # validate the topics in the validate_topics method above.
             topics=self.initial_data["topics"],
         )
 
@@ -87,6 +90,17 @@ class CreateReactionSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "like_or_dislike must be Like, Dislike or empty"
             )
+
+    def validate(self, data):
+        # The solution to ensuring that the dates are tz aware was from the SO post bellow.
+        # https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
+        now = dt.now().replace(tzinfo=pytz.UTC)
+        post_expires_at = data["post"].expires_at.replace(tzinfo=pytz.UTC)
+        if now > post_expires_at:
+            raise serializers.ValidationError(
+                "This post is no long accepting reactions"
+            )
+        return data
 
     def create(self, validated_data):
         return models.Reaction.objects.create(**validated_data)
