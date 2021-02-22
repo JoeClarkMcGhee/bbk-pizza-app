@@ -115,33 +115,22 @@ def tc1(ip, user_1, user_2, user_3, user_4):
     )
 
     def create_users():
-        for user in [user_1, user_2, user_3, user_4]:
-            requests.post(
+        for idx, user in enumerate([user_1, user_2, user_3, user_4]):
+            post = requests.post(
                 url=f"{ip}create-user",
                 json={"username": user, "password": "password123"},
             )
-            response = requests.get(url=f"{ip}users/{user}")
-            print(
-                f"Status code when retrieving details for {user}: {response.status_code}"
-            )
+            # set the access token
+            set_token = user_data.__getattribute__(f"set_user_{idx+1}_access_token")
+            set_token(post.json()["access_token"])
+
+            # set the user id
+            set_user = user_data.__getattribute__(f"set_user_{idx+1}_id")
+            set_user(post.json()["id"])
+
+            print(f"Status code when retrieving details for {user}: {post.status_code}")
 
     create_users()
-
-    get_user_1 = requests.get(url=f"{ip}users/{user_1}")
-    user_1_id = json.loads(get_user_1.content)["id"]
-    user_data.set_user_1_id(user_1_id)
-
-    get_user_2 = requests.get(url=f"{ip}users/{user_2}")
-    user_2_id = json.loads(get_user_2.content)["id"]
-    user_data.set_user_2_id(user_2_id)
-
-    get_user_3 = requests.get(url=f"{ip}users/{user_3}")
-    user_3_id = json.loads(get_user_3.content)["id"]
-    user_data.set_user_3_id(user_3_id)
-
-    get_user_4 = requests.get(url=f"{ip}users/{user_4}")
-    user_4_id = json.loads(get_user_4.content)["id"]
-    user_data.set_user_4_id(user_4_id)
 
 
 def tc2(ip, user_1, user_2, user_3, user_4):
@@ -177,7 +166,11 @@ def tc4(ip, user_1, user_2, user_3, user_4):
         "body": "A really long post body",
         "topics": ["Tech"],
     }
-    create_post = requests.post(url=f"{ip}create-post", json=data)
+    create_post = requests.post(
+        url=f"{ip}create-post",
+        json=data,
+        headers=_header_factory(user_data.USER_1_ACCESS_TOKEN),
+    )
     post_id = json.loads(create_post.content)["id"]
     user_data.set_user_1_post_id(post_id)
 
@@ -188,7 +181,11 @@ def tc4(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_2_ID,
         "post": post_id,
     }
-    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+    reaction = requests.post(
+        url=f"{ip}add-reaction",
+        json=reaction,
+        headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
 
     print(
         "The post to 'add-reaction' should return a 400 as the post is no longer accepting "
@@ -202,7 +199,6 @@ def tc4(ip, user_1, user_2, user_3, user_4):
 
 
 def tc5(ip, user_1, user_2, user_3, user_4):
-    # todo: need to add authentication
     print(
         f"TEST CASE: {user_2} posts a message in the Tech topic with an expiration time using his "
         "token.\n"
@@ -215,7 +211,11 @@ def tc5(ip, user_1, user_2, user_3, user_4):
         "body": "A really long post body",
         "topics": ["Tech"],
     }
-    post = requests.post(url=f"{ip}create-post", json=data)
+    post = requests.post(
+        url=f"{ip}create-post",
+        json=data,
+        headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
     post_id = json.loads(post.content)["id"]
     user_data.set_user_2_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
@@ -223,7 +223,6 @@ def tc5(ip, user_1, user_2, user_3, user_4):
 
 
 def tc6(ip, user_1, user_2, user_3, user_4):
-    # todo: need to add authentication
     print(
         f"TEST CASE: {user_3} posts a message in the Tech topic with an expiration time using her "
         "token.\n"
@@ -236,7 +235,11 @@ def tc6(ip, user_1, user_2, user_3, user_4):
         "body": "A really long post body",
         "topics": ["Tech"],
     }
-    post = requests.post(url=f"{ip}create-post", json=data)
+    post = requests.post(
+        url=f"{ip}create-post",
+        json=data,
+        headers=_header_factory(user_data.USER_3_ACCESS_TOKEN),
+    )
     post_id = json.loads(post.content)["id"]
     user_data.set_user_3_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
@@ -244,18 +247,18 @@ def tc6(ip, user_1, user_2, user_3, user_4):
 
 
 def tc7(ip, user_1, user_2, user_3, user_4):
-    # todo: need to add authentication
     print(
         f"TEST CASE: {user_2} browses all the available posts in the Tech topic, there should be "
         f"three posts available with zero likes, zero dislike and without and comments.\n"
     )
-    posts = requests.get(url=f"{ip}posts/Tech")
+    posts = requests.get(
+        url=f"{ip}posts/Tech", headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc8(ip, user_1, user_2, user_3, user_4):
-    # todo: need to add authentication
     print(
         f"TEST CASE: {user_1} and {user_2} 'like' {user_3}'s post in the Tech topic.\n"
     )
@@ -266,7 +269,11 @@ def tc8(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_1_ID,
         "post": user_data.USER_3_POST_ID,
     }
-    post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
+    post_1 = requests.post(
+        url=f"{ip}add-reaction",
+        json=first_reaction,
+        headers=_header_factory(user_data.USER_1_ACCESS_TOKEN),
+    )
     print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
 
     second_reaction = {
@@ -275,7 +282,11 @@ def tc8(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_2_ID,
         "post": user_data.USER_3_POST_ID,
     }
-    post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
+    post_2 = requests.post(
+        url=f"{ip}add-reaction",
+        json=second_reaction,
+        headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
     print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
 
 
@@ -291,7 +302,11 @@ def tc9(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_4_ID,
         "post": user_data.USER_2_POST_ID,
     }
-    post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
+    post_1 = requests.post(
+        url=f"{ip}add-reaction",
+        json=first_reaction,
+        headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
 
     second_reaction = {
@@ -300,7 +315,11 @@ def tc9(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_4_ID,
         "post": user_data.USER_3_POST_ID,
     }
-    post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
+    post_2 = requests.post(
+        url=f"{ip}add-reaction",
+        json=second_reaction,
+        headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
 
 
@@ -311,7 +330,9 @@ def tc10(ip, user_1, user_2, user_3, user_4):
         f"dislike and {user_2} has 1 like). There are no comments made yet.\n"
     )
 
-    posts = requests.get(url=f"{ip}posts/Tech")
+    posts = requests.get(
+        url=f"{ip}posts/Tech", headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
 
@@ -328,7 +349,11 @@ def tc11(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_3_ID,
         "post": user_data.USER_3_POST_ID,
     }
-    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+    reaction = requests.post(
+        url=f"{ip}add-reaction",
+        json=reaction,
+        headers=_header_factory(user_data.USER_3_ACCESS_TOKEN),
+    )
     print(
         "The post to 'add-reaction' should return a 400 as you are not allowed to react to your "
         "own posts"
@@ -353,7 +378,10 @@ def tc12(ip, user_1, user_2, user_3, user_4):
             "author": user_,
             "post": user_data.USER_3_POST_ID,
         }
-        post = requests.post(url=f"{ip}add-reaction", json=reaction)
+        token = user_data.__getattribute__(f"USER_{idx+1}_ACCESS_TOKEN")
+        post = requests.post(
+            url=f"{ip}add-reaction", json=reaction, headers=_header_factory(token),
+        )
         print(f"add reaction {idx +1} status code: {post.status_code}")
 
     for idx, user in enumerate(
@@ -373,7 +401,9 @@ def tc13(ip, user_1, user_2, user_3, user_4):
         f"he can see the number of like and dislikes of each post and the comments made.\n"
     )
 
-    posts = requests.get(url=f"{ip}posts/Tech")
+    posts = requests.get(
+        url=f"{ip}posts/Tech", headers=_header_factory(user_data.USER_2_ACCESS_TOKEN),
+    )
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
 
@@ -391,7 +421,11 @@ def tc14(ip, user_1, user_2, user_3, user_4):
         "body": "A cool post about something health related",
         "topics": ["Health"],
     }
-    post = requests.post(url=f"{ip}create-post", json=data)
+    post = requests.post(
+        url=f"{ip}create-post",
+        json=data,
+        headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     post_id = json.loads(post.content)["id"]
     user_data.set_user_4_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
@@ -402,7 +436,9 @@ def tc15(ip, user_1, user_2, user_3, user_4):
         f"TEST CASE: {user_3} browses all the available posts in the Health topic; at this stage "
         f"she can only {user_4}'s post.\n"
     )
-    posts = requests.get(url=f"{ip}posts/Health")
+    posts = requests.get(
+        url=f"{ip}posts/Health", headers=_header_factory(user_data.USER_3_ACCESS_TOKEN),
+    )
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
 
@@ -416,7 +452,11 @@ def tc16(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_3_ID,
         "post": user_data.USER_4_POST_ID,
     }
-    post = requests.post(url=f"{ip}add-reaction", json=reaction)
+    post = requests.post(
+        url=f"{ip}add-reaction",
+        json=reaction,
+        headers=_header_factory(user_data.USER_3_ACCESS_TOKEN),
+    )
     print(f"Status code of post to 'add-reaction': {post.status_code}")
 
 
@@ -436,7 +476,11 @@ def tc17(ip, user_1, user_2, user_3, user_4):
         "author": user_data.USER_3_ID,
         "post": user_data.USER_4_POST_ID,
     }
-    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+    reaction = requests.post(
+        url=f"{ip}add-reaction",
+        json=reaction,
+        headers=_header_factory(user_data.USER_3_ACCESS_TOKEN),
+    )
 
     print(
         "The post to 'add-reaction' should return a 400 as the post is no longer accepting "
@@ -455,7 +499,9 @@ def tc18(ip, user_1, user_2, user_3, user_4):
         f"one post (his own) with one comment ({user_3}'s).\n"
     )
 
-    posts = requests.get(url=f"{ip}posts/Health")
+    posts = requests.get(
+        url=f"{ip}posts/Health", headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
 
@@ -466,7 +512,10 @@ def tc19(ip, user_1, user_2, user_3, user_4):
         f"be empty.\n"
     )
 
-    posts = requests.get(url=f"{ip}posts/Sport?active=false")
+    posts = requests.get(
+        url=f"{ip}posts/Sport?active=false",
+        headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     print("If there are any post that will be displayed here")
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
@@ -478,7 +527,10 @@ def tc20(ip, user_1, user_2, user_3, user_4):
         f"of like, dislikes and comments in the Tech topic). This should be {user_3}'s post.\n"
     )
 
-    post = requests.get(url=f"{ip}posts/highest-interest/Tech?active=true")
+    post = requests.get(
+        url=f"{ip}posts/highest-interest/Tech?active=true",
+        headers=_header_factory(user_data.USER_4_ACCESS_TOKEN),
+    )
     print(
         f"{user_3}'s id is {user_data.USER_3_ID} so the author of the returned post should "
         f"match this"
@@ -488,6 +540,10 @@ def tc20(ip, user_1, user_2, user_3, user_4):
 
 def _pretty_json(data):
     return json.dumps(data, indent=2)
+
+
+def _header_factory(token):
+    return {"Authorization": "Bearer " + str(token)}
 
 
 if __name__ == "__main__":
