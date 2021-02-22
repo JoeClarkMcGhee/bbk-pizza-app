@@ -6,45 +6,65 @@ from datetime import datetime as dt
 import requests
 
 
-class UserPostData:
+class UserData:
     USER_1_POST_ID = None
     USER_1_ID = None
+    USER_1_ACCESS_TOKEN = None
 
     USER_2_POST_ID = None
     USER_2_ID = None
+    USER_2_ACCESS_TOKEN = None
 
     USER_3_POST_ID = None
     USER_3_ID = None
+    USER_3_ACCESS_TOKEN = None
 
     USER_4_POST_ID = None
     USER_4_ID = None
+    USER_4_ACCESS_TOKEN = None
 
+    # User 1 setters
     def set_user_1_post_id(self, pk):
         self.USER_1_POST_ID = pk
 
     def set_user_1_id(self, pk):
         self.USER_1_ID = pk
 
+    def set_user_1_access_token(self, access_token):
+        self.USER_1_ACCESS_TOKEN = access_token
+
+    # User 2 setters
     def set_user_2_post_id(self, pk):
         self.USER_2_POST_ID = pk
 
     def set_user_2_id(self, pk):
         self.USER_2_ID = pk
 
+    def set_user_2_access_token(self, access_token):
+        self.USER_2_ACCESS_TOKEN = access_token
+
+    # User 3 setters
     def set_user_3_post_id(self, pk):
         self.USER_3_POST_ID = pk
 
     def set_user_3_id(self, pk):
         self.USER_3_ID = pk
 
+    def set_user_3_access_token(self, access_token):
+        self.USER_3_ACCESS_TOKEN = access_token
+
+    # User 4 setters
     def set_user_4_post_id(self, pk):
         self.USER_4_POST_ID = pk
 
     def set_user_4_id(self, pk):
         self.USER_4_ID = pk
 
+    def set_user_4_access_token(self, access_token):
+        self.USER_4_ACCESS_TOKEN = access_token
 
-pizza_data = UserPostData()
+
+user_data = UserData()
 
 
 def test_case_runner(ip, test_cases):
@@ -109,19 +129,19 @@ def tc1(ip, user_1, user_2, user_3, user_4):
 
     get_user_1 = requests.get(url=f"{ip}users/{user_1}")
     user_1_id = json.loads(get_user_1.content)["id"]
-    pizza_data.set_user_1_id(user_1_id)
+    user_data.set_user_1_id(user_1_id)
 
     get_user_2 = requests.get(url=f"{ip}users/{user_2}")
     user_2_id = json.loads(get_user_2.content)["id"]
-    pizza_data.set_user_2_id(user_2_id)
+    user_data.set_user_2_id(user_2_id)
 
     get_user_3 = requests.get(url=f"{ip}users/{user_3}")
     user_3_id = json.loads(get_user_3.content)["id"]
-    pizza_data.set_user_3_id(user_3_id)
+    user_data.set_user_3_id(user_3_id)
 
     get_user_4 = requests.get(url=f"{ip}users/{user_4}")
     user_4_id = json.loads(get_user_4.content)["id"]
-    pizza_data.set_user_4_id(user_4_id)
+    user_data.set_user_4_id(user_4_id)
 
 
 def tc2(ip, user_1, user_2, user_3, user_4):
@@ -152,20 +172,20 @@ def tc4(ip, user_1, user_2, user_3, user_4):
     # user_1 creates a post
     data = {
         "expires_at": f"{dt.now()}",
-        "author": pizza_data.USER_1_ID,
+        "author": user_data.USER_1_ID,
         "title": "Post 1",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
     create_post = requests.post(url=f"{ip}create-post", json=data)
     post_id = json.loads(create_post.content)["id"]
-    pizza_data.set_user_1_post_id(post_id)
+    user_data.set_user_1_post_id(post_id)
 
     # user_2 post a reaction against user_1's post
     reaction = {
         "like_or_dislike": "Like",
         "comment": "I really like this post",
-        "author": pizza_data.USER_2_ID,
+        "author": user_data.USER_2_ID,
         "post": post_id,
     }
     reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
@@ -190,14 +210,14 @@ def tc5(ip, user_1, user_2, user_3, user_4):
 
     data = {
         "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
-        "author": pizza_data.USER_2_ID,
+        "author": user_data.USER_2_ID,
         "title": "Post 2",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
     post = requests.post(url=f"{ip}create-post", json=data)
     post_id = json.loads(post.content)["id"]
-    pizza_data.set_user_2_post_id(post_id)
+    user_data.set_user_2_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
     print(_pretty_json(json.loads(post.content)))
 
@@ -211,14 +231,14 @@ def tc6(ip, user_1, user_2, user_3, user_4):
 
     data = {
         "expires_at": f"{dt.now() + datetime.timedelta(days=10)}",
-        "author": pizza_data.USER_3_ID,
+        "author": user_data.USER_3_ID,
         "title": "Post 3",
         "body": "A really long post body",
         "topics": ["Tech"],
     }
     post = requests.post(url=f"{ip}create-post", json=data)
     post_id = json.loads(post.content)["id"]
-    pizza_data.set_user_3_post_id(post_id)
+    user_data.set_user_3_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
     print(_pretty_json(json.loads(post.content)))
 
@@ -243,8 +263,8 @@ def tc8(ip, user_1, user_2, user_3, user_4):
     first_reaction = {
         "like_or_dislike": "Like",
         "comment": "",
-        "author": pizza_data.USER_1_ID,
-        "post": pizza_data.USER_3_POST_ID,
+        "author": user_data.USER_1_ID,
+        "post": user_data.USER_3_POST_ID,
     }
     post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
     print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
@@ -252,8 +272,8 @@ def tc8(ip, user_1, user_2, user_3, user_4):
     second_reaction = {
         "like_or_dislike": "Like",
         "comment": "",
-        "author": pizza_data.USER_2_ID,
-        "post": pizza_data.USER_3_POST_ID,
+        "author": user_data.USER_2_ID,
+        "post": user_data.USER_3_POST_ID,
     }
     post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
     print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
@@ -268,8 +288,8 @@ def tc9(ip, user_1, user_2, user_3, user_4):
     first_reaction = {
         "like_or_dislike": "Like",
         "comment": "",
-        "author": pizza_data.USER_4_ID,
-        "post": pizza_data.USER_2_POST_ID,
+        "author": user_data.USER_4_ID,
+        "post": user_data.USER_2_POST_ID,
     }
     post_1 = requests.post(url=f"{ip}add-reaction", json=first_reaction)
     print(f"Status code of first post to 'add-reaction': {post_1.status_code}")
@@ -277,8 +297,8 @@ def tc9(ip, user_1, user_2, user_3, user_4):
     second_reaction = {
         "like_or_dislike": "Dislike",
         "comment": "",
-        "author": pizza_data.USER_4_ID,
-        "post": pizza_data.USER_3_POST_ID,
+        "author": user_data.USER_4_ID,
+        "post": user_data.USER_3_POST_ID,
     }
     post_2 = requests.post(url=f"{ip}add-reaction", json=second_reaction)
     print(f"Status code of second post to 'add-reaction': {post_2.status_code}")
@@ -305,8 +325,8 @@ def tc11(ip, user_1, user_2, user_3, user_4):
     reaction = {
         "like_or_dislike": "Like",
         "comment": "I'm trying to like me own post",
-        "author": pizza_data.USER_3_ID,
-        "post": pizza_data.USER_3_POST_ID,
+        "author": user_data.USER_3_ID,
+        "post": user_data.USER_3_POST_ID,
     }
     reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
     print(
@@ -331,17 +351,17 @@ def tc12(ip, user_1, user_2, user_3, user_4):
             "like_or_dislike": "",
             "comment": comment,
             "author": user_,
-            "post": pizza_data.USER_3_POST_ID,
+            "post": user_data.USER_3_POST_ID,
         }
         post = requests.post(url=f"{ip}add-reaction", json=reaction)
         print(f"add reaction {idx +1} status code: {post.status_code}")
 
     for idx, user in enumerate(
         [
-            pizza_data.USER_1_ID,
-            pizza_data.USER_2_ID,
-            pizza_data.USER_1_ID,
-            pizza_data.USER_2_ID,
+            user_data.USER_1_ID,
+            user_data.USER_2_ID,
+            user_data.USER_1_ID,
+            user_data.USER_2_ID,
         ]
     ):
         add_reaction(user, idx, comment=f"cool comment number {idx + 1}")
@@ -366,14 +386,14 @@ def tc14(ip, user_1, user_2, user_3, user_4):
 
     data = {
         "expires_at": f"{dt.now() + datetime.timedelta(seconds=5)}",
-        "author": pizza_data.USER_4_ID,
+        "author": user_data.USER_4_ID,
         "title": "Post 4",
         "body": "A cool post about something health related",
         "topics": ["Health"],
     }
     post = requests.post(url=f"{ip}create-post", json=data)
     post_id = json.loads(post.content)["id"]
-    pizza_data.set_user_4_post_id(post_id)
+    user_data.set_user_4_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
 
 
@@ -393,8 +413,8 @@ def tc16(ip, user_1, user_2, user_3, user_4):
     reaction = {
         "like_or_dislike": "",
         "comment": "A reaction about some post about health",
-        "author": pizza_data.USER_3_ID,
-        "post": pizza_data.USER_4_POST_ID,
+        "author": user_data.USER_3_ID,
+        "post": user_data.USER_4_POST_ID,
     }
     post = requests.post(url=f"{ip}add-reaction", json=reaction)
     print(f"Status code of post to 'add-reaction': {post.status_code}")
@@ -413,8 +433,8 @@ def tc17(ip, user_1, user_2, user_3, user_4):
     reaction = {
         "like_or_dislike": "Dislike",
         "comment": "",
-        "author": pizza_data.USER_3_ID,
-        "post": pizza_data.USER_4_POST_ID,
+        "author": user_data.USER_3_ID,
+        "post": user_data.USER_4_POST_ID,
     }
     reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
 
@@ -460,7 +480,7 @@ def tc20(ip, user_1, user_2, user_3, user_4):
 
     post = requests.get(url=f"{ip}posts/highest-interest/Tech?active=true")
     print(
-        f"{user_3}'s id is {pizza_data.USER_3_ID} so the author of the returned post should "
+        f"{user_3}'s id is {user_data.USER_3_ID} so the author of the returned post should "
         f"match this"
     )
     print(_pretty_json(json.loads(post.content)))
