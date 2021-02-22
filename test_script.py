@@ -431,7 +431,10 @@ def tc19(ip, user_1, user_2, user_3, user_4):
         f"be empty.\n"
     )
 
-    print("SKIPPED")
+    posts = requests.get(url=f"{ip}posts/Sport?expired=true")
+    print("If there are any post that will be displayed here")
+    for idx, post in enumerate(json.loads(posts.content)):
+        print(f"Post {idx + 1}: {post}")
 
 
 def tc20(ip, user_1, user_2, user_3, user_4):

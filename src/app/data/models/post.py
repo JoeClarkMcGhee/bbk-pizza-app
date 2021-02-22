@@ -1,3 +1,6 @@
+from datetime import datetime as dt
+
+import pytz
 from django.contrib.auth import models as user_models
 from django.db import models, transaction
 
@@ -24,6 +27,12 @@ class Post(models.Model):
             f"<{self.__class__.__name__}, id: {self.pk} created_at: {self.created_at}, "
             f"expires_at: {self.expires_at}, title: {self.title}>"
         )
+
+    @property
+    def is_expired(self):
+        now = dt.now().replace(tzinfo=pytz.UTC)
+        post_expires_at = self.expires_at.replace(tzinfo=pytz.UTC)
+        return now > post_expires_at
 
     @classmethod
     @transaction.atomic
