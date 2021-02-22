@@ -21,6 +21,11 @@ urlpatterns = [
         post_views.PostsByTopicView.as_view(),
         name="posts-by-topic",
     ),
+    path(
+        "posts/highest-interest/<str:topic>",
+        post_views.HighestInterestPost.as_view(),
+        name="post-with-highest-interest",
+    ),
     # Reaction views.
     path(
         "add-reaction", reaction_views.AddReactionView.as_view(), name="add-reaction",

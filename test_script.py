@@ -431,7 +431,7 @@ def tc19(ip, user_1, user_2, user_3, user_4):
         f"be empty.\n"
     )
 
-    posts = requests.get(url=f"{ip}posts/Sport?expired=true")
+    posts = requests.get(url=f"{ip}posts/Sport?active=false")
     print("If there are any post that will be displayed here")
     for idx, post in enumerate(json.loads(posts.content)):
         print(f"Post {idx + 1}: {_pretty_json(post)}")
@@ -439,11 +439,16 @@ def tc19(ip, user_1, user_2, user_3, user_4):
 
 def tc20(ip, user_1, user_2, user_3, user_4):
     print(
-        f"TEST CASE: {user_4} queries fo an active post having the highest interest (maximum sum "
-        f"of like and dislikes in the Tech topic. This should be {user_3}'s post.\n"
+        f"TEST CASE: {user_4} queries for an active post having the highest interest (maximum sum "
+        f"of like, dislikes and comments in the Tech topic. This should be {user_3}'s post.\n"
     )
 
-    print("SKIPPED")
+    post = requests.get(url=f"{ip}posts/highest-interest/Tech?active=true")
+    print(
+        f"{user_3}'s id is {pizza_data.USER_3_ID} so the author of the returned post should "
+        f"match this"
+    )
+    print(_pretty_json(json.loads(post.content)))
 
 
 def _pretty_json(data):
