@@ -34,6 +34,4 @@ simple like/dis-like reactions.
 
 
 <h2>Todo's</h2>
-- Pretty print the json in the test script
-
 - Add the failing test cases
