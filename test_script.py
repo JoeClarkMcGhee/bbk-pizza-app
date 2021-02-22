@@ -199,7 +199,7 @@ def tc5(ip, user_1, user_2, user_3, user_4):
     post_id = json.loads(post.content)["id"]
     pizza_data.set_user_2_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
-    print(json.loads(post.content))
+    print(_pretty_json(json.loads(post.content)))
 
 
 def tc6(ip, user_1, user_2, user_3, user_4):
@@ -220,7 +220,7 @@ def tc6(ip, user_1, user_2, user_3, user_4):
     post_id = json.loads(post.content)["id"]
     pizza_data.set_user_3_post_id(post_id)
     print(f"Status code of post: {post.status_code}")
-    print(json.loads(post.content))
+    print(_pretty_json(json.loads(post.content)))
 
 
 def tc7(ip, user_1, user_2, user_3, user_4):
@@ -231,7 +231,7 @@ def tc7(ip, user_1, user_2, user_3, user_4):
     )
     posts = requests.get(url=f"{ip}posts/Tech")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc8(ip, user_1, user_2, user_3, user_4):
@@ -293,7 +293,7 @@ def tc10(ip, user_1, user_2, user_3, user_4):
 
     posts = requests.get(url=f"{ip}posts/Tech")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc11(ip, user_1, user_2, user_3, user_4):
@@ -340,7 +340,7 @@ def tc13(ip, user_1, user_2, user_3, user_4):
 
     posts = requests.get(url=f"{ip}posts/Tech")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc14(ip, user_1, user_2, user_3, user_4):
@@ -369,7 +369,7 @@ def tc15(ip, user_1, user_2, user_3, user_4):
     )
     posts = requests.get(url=f"{ip}posts/Health")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc16(ip, user_1, user_2, user_3, user_4):
@@ -422,7 +422,7 @@ def tc18(ip, user_1, user_2, user_3, user_4):
 
     posts = requests.get(url=f"{ip}posts/Health")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc19(ip, user_1, user_2, user_3, user_4):
@@ -434,7 +434,7 @@ def tc19(ip, user_1, user_2, user_3, user_4):
     posts = requests.get(url=f"{ip}posts/Sport?expired=true")
     print("If there are any post that will be displayed here")
     for idx, post in enumerate(json.loads(posts.content)):
-        print(f"Post {idx + 1}: {post}")
+        print(f"Post {idx + 1}: {_pretty_json(post)}")
 
 
 def tc20(ip, user_1, user_2, user_3, user_4):
@@ -444,6 +444,10 @@ def tc20(ip, user_1, user_2, user_3, user_4):
     )
 
     print("SKIPPED")
+
+
+def _pretty_json(data):
+    return json.dumps(data, indent=2)
 
 
 if __name__ == "__main__":
