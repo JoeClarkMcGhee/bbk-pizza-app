@@ -94,6 +94,11 @@ class CreateReactionSerializer(serializers.ModelSerializer):
             )
 
     def validate(self, data):
+        self.validate_post_accepting_reactions(data)
+        self.validate_post_author_not_same_as_reaction_author(data)
+        return data
+
+    def validate_post_accepting_reactions(self, data):
         # The solution to ensuring that the dates are tz aware was from the SO post bellow.
         # https://stackoverflow.com/questions/15307623/cant-compare-naive-and-aware-datetime-now-challenge-datetime-end
         now = dt.now().replace(tzinfo=pytz.UTC)
@@ -102,7 +107,12 @@ class CreateReactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "This post is no long accepting reactions"
             )
-        return data
+
+    def validate_post_author_not_same_as_reaction_author(self, data):
+        post_author_id = data["post"].author.id
+        reaction_author_id = data["author"].id
+        if post_author_id == reaction_author_id:
+            raise serializers.ValidationError("You can't react to your own posts")
 
     def create(self, validated_data):
         if not validated_data["like_or_dislike"]:

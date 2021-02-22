@@ -302,7 +302,22 @@ def tc11(ip, user_1, user_2, user_3, user_4):
         "as in Pizza a post owner cannot like their own messages.\n"
     )
 
-    print("SKIPPED")
+    reaction = {
+        "like_or_dislike": "Like",
+        "comment": "I'm trying to like me own post",
+        "author": pizza_data.USER_3_ID,
+        "post": pizza_data.USER_3_POST_ID,
+    }
+    reaction = requests.post(url=f"{ip}add-reaction", json=reaction)
+    print(
+        "The post to 'add-reaction' should return a 400 as you are not allowed to react to your "
+        "own posts"
+    )
+    print(f"Status code of post to 'add-reaction': {reaction.status_code}")
+    print(
+        f"Returned message of post to 'add-reaction': "
+        f"{json.loads(reaction.content)['non_field_errors'][0]}"
+    )
 
 
 def tc12(ip, user_1, user_2, user_3, user_4):
@@ -440,7 +455,7 @@ def tc19(ip, user_1, user_2, user_3, user_4):
 def tc20(ip, user_1, user_2, user_3, user_4):
     print(
         f"TEST CASE: {user_4} queries for an active post having the highest interest (maximum sum "
-        f"of like, dislikes and comments in the Tech topic. This should be {user_3}'s post.\n"
+        f"of like, dislikes and comments in the Tech topic). This should be {user_3}'s post.\n"
     )
 
     post = requests.get(url=f"{ip}posts/highest-interest/Tech?active=true")
