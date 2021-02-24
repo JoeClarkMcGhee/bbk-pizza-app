@@ -5,6 +5,7 @@ from src.app.interfaces.api.views import post_views, reaction_views, user_views
 urlpatterns = [
     # User views.
     path("create-user", user_views.CreateUserView.as_view(), name="create-user",),
+    path("token", user_views.Token.as_view()),
     path("users", user_views.UsersView.as_view(), name="users",),
     path("users/<int:pk>", user_views.DetailUserView.as_view(), name="detail-user",),
     path(

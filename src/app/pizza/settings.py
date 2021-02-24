@@ -6,6 +6,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "n$8r73o-pe)4t+gkod5y)l^k00!!nz7z2(%4bj4&v==bm7#dlz"
 
+# Placing the application secretes here is clearly completely daft. If this application was
+# deployed into a production setting we would store these secretes in a safe place.
+CLIENT_ID = "nzLb0dcYuz6QZVBtwp72IPYHnS5ylDyUx5M81Wqf"
+CLIENT_SECRET = "onUzQe48UZMlpoGlFCyqUpVA6FVqSnLJRyOROFggaMXALDXuIR41pKTAskwmQuJA7IVizKisoPnzFy0hCg50E1Yt2r6BZjbppUjglbZ6avT8586cWT9VaCpUqk19SU6L"
+TOKEN_URL = "http://127.0.0.1:8000/oAuth/token/"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -22,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third party apps
+    "oauth2_provider",
     "rest_framework",
     "django_extensions",
     # Project specific apps
@@ -32,12 +39,26 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+}
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "oauth2_provider.backends.OAuth2Backend",
+)
 
 ROOT_URLCONF = "app.pizza.urls"
 

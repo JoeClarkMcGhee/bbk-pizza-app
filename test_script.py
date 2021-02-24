@@ -139,7 +139,7 @@ def tc2(ip, user_1, user_2, user_3, user_4):
         f"service to register and get their tokens.\n"
     )
 
-    print("SKIPPED")
+    print("Users registered and tokens set as part of test case 1")
 
 
 def tc3(ip, user_1, user_2, user_3, user_4):
@@ -148,7 +148,15 @@ def tc3(ip, user_1, user_2, user_3, user_4):
         f"be unsuccessful as the user is unauthorised.\n"
     )
 
-    print("SKIPPED")
+    post = requests.get(url=f"{ip}posts/Tech")
+    print(
+        "The request to 'posts/Tech' should return a 401 as the request was not authenticated"
+    )
+    print(f"Status code of post to 'add-reaction': {post.status_code}")
+    print(
+        f"Returned message of post to 'add-reaction': "
+        f"{json.loads(post.content)['detail'][0]}"
+    )
 
 
 def tc4(ip, user_1, user_2, user_3, user_4):
