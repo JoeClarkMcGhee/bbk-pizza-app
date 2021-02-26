@@ -20,18 +20,34 @@ simple like/dis-like reactions.
    
 `pipenv run pip install -e .`
 
-4. Run the test suite
+
+4. Run the database migrations
+
+`python src/manage.py migrate`
+
+5. Create a superuser 
+
+`python src/manage.py createsuperuser`
+
+6. Generate (via the Django admin interface) a client ID and client secrete then update the 
+   `CLIENT_ID` and `CLIENT_SECRET` in `app/pizza/settings.py`
+
+7. Run the test suite if you feel like it :bowtie:
 
 `export DJANGO_SETTINGS_MODULE=app.pizza.settings && cd src && pytest`
 
-5. Activate the service
+8. Activate the service
 
 `python src/manage.py runserver`
 
-6. Run the test script. Note, edit the IP in test script to point hit a local or production address
+9. Run the test script.
+   
+   Note, you can edit the IP in test script to point to a local or production address. The 
+   default is local, as such the test script works out of the box.
 
 `python test_script.py`
 
 
 <h2>Todo's</h2>
 - Add the failing test cases
+- Fix skipped functional test
