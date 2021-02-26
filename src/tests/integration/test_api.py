@@ -1,12 +1,12 @@
-import io
 from datetime import datetime as dt
 
 import freezegun
 import pytest
 from django import urls
 from django.contrib.auth import models as user_models
-from rest_framework import parsers, status, test
+from rest_framework import status, test
 from src.app.data import models
+from src.app.interfaces.api.views import post_views, reaction_views, user_views
 
 pytestmark = pytest.mark.django_db
 
@@ -24,35 +24,45 @@ def _create_post(user, title, body, topics):
 # The test cases took influence from the examples on the Django Rest Framework documentation
 # which can be found at https://www.django-rest-framework.org/api-guide/testing/
 class TestApiEndPointsWithGoodRequests(test.APITestCase):
+    factory = test.APIRequestFactory()
+
     def test_create_user(self):
         url = urls.reverse("create-user")
-        data = {"username": "test user", "password": "pass1234"}
+        data = {"username": "testuser", "password": "pass1234"}
         response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert user_models.User.objects.count() == 1
-        assert response.data["username"] == "test user"
+        assert response.data["username"] == "testuser"
 
     def test_list_users(self):
-        _create_user("Harry", "you're a wizard harry!")
+        user = _create_user("Harry", "you're a wizard harry!")
         url = urls.reverse("users")
-        response = self.client.get(url, format="json")
+        request = self.factory.get(url, format="json")
+        test.force_authenticate(request, user=user)
+        response = user_views.UsersView.as_view()(request)
 
         assert response.status_code == status.HTTP_200_OK
         expected_response = {"id": 1, "username": "Harry"}
         assert dict(response.data[0]) == expected_response
 
     def test_list_single_user(self):
-        _create_user("Tony", "the tiger")
-        response = self.client.get("/users/1", format="json")
+        user = _create_user("Tony", "the tiger")
+        request = self.factory.get(path="/users/1")
+        test.force_authenticate(request, user=user)
+        view = user_views.DetailUserView.as_view()
+        response = view(request, pk=1)
 
         assert response.status_code == status.HTTP_200_OK
         expected_response = {"id": 1, "username": "Tony"}
         assert response.data == expected_response
 
     def test_get_user_by_name(self):
-        _create_user("Tony", "the tiger")
-        response = self.client.get("/users/Tony", format="json")
+        user = _create_user("Tony", "the tiger")
+        request = self.factory.get(path="/users/Tony")
+        test.force_authenticate(request, user=user)
+        view = user_views.DetailUserViewByName.as_view()
+        response = view(request, username="Tony")
 
         assert response.status_code == status.HTTP_200_OK
         expected_response = {"id": 1, "username": "Tony"}
@@ -69,18 +79,23 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
             "topics": ["Politics"],
         }
         url = urls.reverse("create-post")
-        response = self.client.post(url, data=data, format="json")
+        request = self.factory.post(url, data=data)
+        test.force_authenticate(request, user=user)
+        view = post_views.CreatePostView.as_view()
+        response = view(request)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["author"] == user.id
         assert response.data["title"] == "My first post"
         assert response.data["body"] == "A really long post body"
-        assert response.data["topics"] == ["Politics"]
 
     def test_list_post(self):
-        user = _create_user("Another User", "passwordABC")
+        user = _create_user("AnotherUser", "passwordABC")
         _create_post(user, "body", "title", ["Tech"])
-        response = self.client.get("/posts/1", format="json")
+        request = self.factory.get("/posts/1")
+        test.force_authenticate(request, user=user)
+        view = post_views.DetailPostView.as_view()
+        response = view(request, pk=1)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["author"] == user.id
@@ -90,20 +105,17 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
 
     @freezegun.freeze_time("2020-01-01 00:00:00", tick=False)
     def test_list_all_posts(self):
-        user = _create_user("Super cool user", "passwordXYZ")
+        user = _create_user("SuperCoolUser", "passwordXYZ")
         _create_post(user, "title A", "body A", ["Tech"])
         _create_post(user, "title B", "body B", ["Tech", "Sport"])
         url = urls.reverse("posts")
-        response = self.client.get(url, format="json")
+        request = self.factory.get(url)
+        test.force_authenticate(request, user=user)
+        view = post_views.PostsView.as_view()
+        response = view(request)
 
         assert response.status_code == status.HTTP_200_OK
-
-        # Parsing the response byte content taken from the rest documentation.
-        # https://www.django-rest-framework.org/tutorial/1-serialization/#working-with-serializers
-        content = io.BytesIO(response.content)
-        data = parsers.JSONParser().parse(content)
-
-        assert data == [
+        assert response.data == [
             {
                 "created_at": "2020-01-01T00:00:00Z",
                 "expires_at": "2020-01-01T00:00:00Z",
@@ -126,8 +138,9 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
 
     @freezegun.freeze_time("2020-01-01 00:00:00", tick=False)
     def test_add_reactions_to_post(self):
-        user = _create_user("Cool dude user", "password1234")
-        post = _create_post(user, "title", "body", ["Tech", "Sport", "Politics"])
+        post_author = _create_user("CoolDudeUser", "password1234")
+        post = _create_post(post_author, "title", "body", ["Tech", "Sport", "Politics"])
+        user = _create_user("CoolDude", "password1234")
 
         # Add the first reaction.
         url = urls.reverse("add-reaction")
@@ -137,12 +150,15 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
             "author": user.id,
             "post": post.id,
         }
-        first_response = self.client.post(url, data=first_reaction, format="json")
+        request = self.factory.post(url, data=first_reaction)
+        test.force_authenticate(request, user=user)
+        view = reaction_views.AddReactionView.as_view()
+        response = view(request)
 
-        assert first_response.status_code == status.HTTP_201_CREATED
-        assert first_response.data["like_or_dislike"] == "Like"
-        assert first_response.data["author"] == user.id
-        assert first_response.data["post"] == post.id
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["like_or_dislike"] == "Like"
+        assert response.data["author"] == user.id
+        assert response.data["post"] == post.id
 
         # Add the second reaction.
         second_reaction = {
@@ -151,26 +167,30 @@ class TestApiEndPointsWithGoodRequests(test.APITestCase):
             "author": user.id,
             "post": post.id,
         }
-        second_response = self.client.post(url, data=second_reaction, format="json")
+        request = self.factory.post(url, data=second_reaction)
+        test.force_authenticate(request, user=user)
+        view = reaction_views.AddReactionView.as_view()
+        response = view(request)
 
-        assert second_response.status_code == status.HTTP_201_CREATED
-        assert second_response.data["like_or_dislike"] == "Dislike"
-        assert second_response.data["author"] == user.id
-        assert second_response.data["post"] == post.id
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["like_or_dislike"] == "Dislike"
+        assert response.data["author"] == user.id
+        assert response.data["post"] == post.id
 
         # We then test that the reactions have been added to the post and that they are return
         # correctly when we hit the post-detail end point.
-        get_post = self.client.get("/posts/1", format="json")
-        content = io.BytesIO(get_post.content)
-        get_post_data = parsers.JSONParser().parse(content)
+        request = self.factory.get("/posts/1")
+        test.force_authenticate(request, user=user)
+        view = post_views.DetailPostView.as_view()
+        response = view(request, pk=1)
 
-        assert get_post_data == {
+        assert response.data == {
             "created_at": "2020-01-01T00:00:00Z",
             "expires_at": "2020-01-01T00:00:00Z",
             "author": 1,
             "reactions": [
-                "2020-01-01 - Cool dude user - Like - I really like this post",
-                "2020-01-01 - Cool dude user - Dislike - not for me",
+                "2020-01-01 - CoolDude - Like - I really like this post",
+                "2020-01-01 - CoolDude - Dislike - not for me",
             ],
             "title": "title",
             "body": "body",
